@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<!-- name属性：类的全路径    table属性：数据库表的名字 -->
+	<class name="cn.lh.tieba.topic.vo.Topic" table="topic">
+		<id name="tid">
+		<!-- native是主动生成策略，它可以根据不同的数据库来选择 -->
+			<generator class="native"/>
+		</id>
+		<property name="tname"/>
+		
+	</class>
+</hibernate-mapping>

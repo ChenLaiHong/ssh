@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    
+    <class name="cn.lh.tieba.replies.vo.Replies" table="replies">
+		<id name="rid">
+		<!-- 主键自动生成策略 -->
+			<generator class="native"/>
+		</id>
+		<!-- 其他属性 -->
+		<property name="rcontents"></property>
+		<property name="authors"></property>
+		<property name="image"></property>
+		<property name="rdate"></property>
+		
+		<many-to-one name="informations" lazy="false" class="cn.lh.tieba.informations.vo.Informations" column="inid"/>
+	</class>
+</hibernate-mapping>

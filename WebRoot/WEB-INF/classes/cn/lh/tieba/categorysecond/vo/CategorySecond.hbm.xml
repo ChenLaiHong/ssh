@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="cn.lh.tieba.categorysecond.vo.CategorySecond" table="categorysecond">
+		<id name="csid">
+			<generator class="native"/>
+		</id>
+		<property name="csname"/>
+		<!-- 二级分类与一级分类的关联 -->
+		<many-to-one name="category" lazy="false" class="cn.lh.tieba.category.vo.Category" column="cid"></many-to-one>
+	
+	     	<!-- 二级分类与图片的关联 -->
+	     <set name="pictures">
+	       	<key column="csid"/>
+	       	<one-to-many class="cn.lh.tieba.picture.vo.Picture"/>
+	     </set>
+	</class>
+</hibernate-mapping>

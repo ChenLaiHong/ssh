@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <constant name="struts.devMode" value="false" />
+ 
+  
+	<package name="tieba" extends="struts-default" namespace="/">
+	<!-- 拦截器 -->
+	<interceptors>
+		<interceptor name="PrivilegeInterceptor" class="cn.lh.tieba.interceptor.PrivilegeInterceptor"/>
+	</interceptors>
+<!-- 很多页面要用到msg.jsp这个页面，所以把它设置为全局的 -->
+		<global-results>
+			<result name="msg">/WEB-INF/jsp/msg.jsp</result>
+			<result name="loginFail">/admin/index.jsp</result>
+		</global-results>
+		
+	<!-- 配置访问首页的Action (class里面的名字要跟applicationContext里面配置的id一致)-->
+	
+	<action name="index" class="indexAction">
+	 	<result name="index">/WEB-INF/jsp/index.jsp</result>
+	 	
+	</action>
+	<!-- 配置用户模块的Action -->
+	<action name="user_*" class="userAction" method="{1}">
+	<result name="registPage">/WEB-INF/jsp/regist.jsp</result>
+	<result name="input">/WEB-INF/jsp/regist.jsp</result>
+	<result name="loginPage">/WEB-INF/jsp/login.jsp</result>
+	<result name="login">/WEB-INF/jsp/login.jsp</result>
+	<result name="loginSuccess" type="redirectAction">index</result>
+    <result name="quit" type="redirectAction">index</result>
+    <result name="checkcodeFail">/WEB-INF/jsp/regist.jsp</result>
+	</action>
+	<!-- 验证码的Action -->
+	<action name="checkImg" class="checkImgAction"></action>
+	
+	<action name="picture_*" class="pictureAction" method="{1}">
+		<result name="findByCid">/WEB-INF/jsp/pictureList.jsp</result>
+		<result name="findByCsid">/WEB-INF/jsp/pictureList.jsp</result>
+	</action>
+	
+	<!-- 群组的Action -->
+	<action name="group_*" class="groupAction" method="{1}">
+	 	<result name="findAll">/WEB-INF/jsp/group.jsp</result>
+	</action>
+	
+	<!-- 贴吧信息的Action -->
+	<action name="informations_*" class="informationsAction" method="{1}">
+	 	<result name="saveSuccess" type="redirectAction">index</result>
+	 	<result name="login">/WEB-INF/jsp/login.jsp</result>
+	 	<result name="findAll">/WEB-INF/jsp/list.jsp</result>
+	 	<result name="findByUidSuccess">/WEB-INF/jsp/myList.jsp</result>
+	 	<result name="deleteSuccess" type="redirectAction">informations_findAll.action?page=1</result>
+	</action>
+	
+	<!-- 回复的Action -->
+	<action name="replies_*" class="repliesAction" method="{1}">
+	 	<result name="findByInid">/WEB-INF/jsp/reply.jsp</result>
+	 	<result name="saveSuccess" type="redirectAction">replies_findByInid.action</result>
+	</action>
+	
+	<!-- 配置后台登录的Action -->
+	<action name="adminUser_*" class="adminUserAction" method="{1}">
+	 	<result name="loginFail">/admin/index.jsp</result>
+	 	<result name="loginSuccess" type="redirect">/admin/home.jsp</result>
+	 	<result name="quitSuccess">/admin/top.jsp</result>
+	</action>
+	<!-- 配置后台管理用户的Action -->
+	<action name="userAdmin_*" class="userAdminAction" method="{1}">
+		<result name="findAll">/admin/user/list.jsp</result>
+		<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	</action>
+	<!-- 配置后台一级分类管理的Action -->
+	<action name="adminCategory_*" class="adminCategoryAction" method="{1}">
+	 	<result name="findAll">/admin/category/list.jsp</result>
+	 	<!-- type不写的时候默认是转发，这里进行保存后要重定向到一个列表页面，所以不能直接跳转到JSP页面而是经过重定向再去查询一次数据库 -->
+	 	<result name="saveSuccess" type="redirectAction">adminCategory_findAll.action</result>
+	 	<result name="deleteSuccess" type="redirectAction">adminCategory_findAll.action</result>
+	 	<result name="editSuccess">/admin/category/edit.jsp</result>
+	 	<result name="updateSuccess" type="redirectAction">adminCategory_findAll.action</result>
+	 	<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	</action>
+	<!-- 配置后台话题管理的Action -->
+	    <action name="adminTopic_*" class="adminTopicAction" method="{1}">
+	 	<result name="findAll">/admin/topic/list.jsp</result>
+	 	<result name="saveSuccess" type="redirectAction">adminTopic_findAll</result>
+	 	<result name="deleteSuccess" type="redirectAction">adminTopic_findAll</result>
+	 	<result name="editSuccess">/admin/topic/edit.jsp</result>
+	 	<result name="updateSuccess" type="redirectAction">adminTopic_findAll</result>
+	 	<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	 	</action>
+	 	<!-- 配置后台二级分类管理的Action -->
+	 	<action name="adminCategorySecond_*" class="adminCategorySecondAction" method="{1}">
+	 		<result name="findAll">/admin/categorysecond/list.jsp</result>
+	 		<result name="addPageSuccess">/admin/categorysecond/add.jsp</result>
+	 		<result name="saveSuccess" type="redirectAction">adminCategorySecond_findAll.action?page=1</result>
+	 		<result name="deleteSuccess" type="redirectAction">adminCategorySecond_findAll.action?page=1</result>
+	 		<result name="editSuccess">/admin/categorysecond/edit.jsp</result>
+	 		<result name="updateSuccess" type="redirectAction">adminCategorySecond_findAll.action?page=1</result>
+	 		<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	 	</action>
+	 	<!-- 配置后台图片管理的Action -->
+	 	<action name="adminPicture_*" class="adminPictureAction" method="{1}">
+	 		<result name="findAll">/admin/picture/list.jsp</result>
+	 		<result name="addPageSuccess">/admin/picture/add.jsp</result>
+	 		<result name="saveSuccess" type="redirectAction">adminPicture_findAll.action?page=1</result>
+	 		<result name="deleteSuccess" type="redirectAction">adminPicture_findAll.action?page=1</result>
+	 		<result name="editSuccess">/admin/picture/edit.jsp</result>
+	 		<result name="updateSuccess" type="redirectAction">adminPicture_findAll.action?page=1</result>
+	 		<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	 	</action>
+	 	<!-- 配置后台贴吧信息管理的Action -->
+	 	<action name="adminInformations_*" class="adminInformationsAction" method="{1}">
+	 		<result name="findAll">/admin/informations/list.jsp</result>
+	 		<result name="deleteSuccess" type="redirectAction">adminInformations_findAll.action?page=1</result>
+	 		<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		<!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	 	</action>
+	 	<!-- 配置后台群组管理的Action -->
+	 	<action name="adminGroup_*" class="adminGroupAction" method="{1}">
+	 		<result name="findAll">/admin/group/list.jsp</result>
+	 		<result name="addPageSuccess">/admin/group/add.jsp</result>
+	 		<result name="saveSuccess" type="redirectAction">adminGroup_findAll.action?page=1</result>
+	 		<result name="deleteSuccess" type="redirectAction">adminGroup_findAll.action?page=1</result>
+	 		<result name="editSuccess">/admin/group/edit.jsp</result>
+	 		<result name="updateSuccess" type="redirectAction">adminGroup_findAll.action?page=1</result>
+	 		<interceptor-ref name="PrivilegeInterceptor"></interceptor-ref>
+		    <!-- struts2默认的拦截器就不能用了 -->
+		<interceptor-ref name="defaultStack"></interceptor-ref>
+		
+	 	</action>
+	</package>
+</struts>

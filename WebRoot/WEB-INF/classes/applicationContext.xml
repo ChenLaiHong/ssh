@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- 配置连接池: -->
+	<!-- 引入外部属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	<!-- 配置C3P0连接池:从属性文件中获取信息过来 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- Hibernate的相关信息 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 配置Hibernate的其他的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		
+<!-- 配置Hibernate的映射文件 -->
+		
+		<property name="mappingResources">
+			<list>
+				<value>cn/lh/tieba/user/vo/User.hbm.xml</value>
+				<value>cn/lh/tieba/category/vo/Category.hbm.xml</value>
+				<value>cn/lh/tieba/picture/vo/Picture.hbm.xml</value>
+				<value>cn/lh/tieba/categorysecond/vo/CategorySecond.hbm.xml</value>
+				<value>cn/lh/tieba/topic/vo/Topic.hbm.xml</value>
+				<value>cn/lh/tieba/group/vo/Group.hbm.xml</value>
+				<value>cn/lh/tieba/adminuser/vo/AdminUser.hbm.xml</value>
+				<value>cn/lh/tieba/informations/vo/Informations.hbm.xml</value>
+				<value>cn/lh/tieba/replies/vo/Replies.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 事务管理: -->
+	<!-- 事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<!-- 开启注解事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+<!-- Action的配置 ===========================-->
+	
+	<!-- 首页访问的Action -->
+	<bean id="indexAction" class="cn.lh.tieba.index.action.IndexAction" scope="prototype">
+		<property name="categoryService" ref="categoryService"/>
+		<property name="topicService" ref="topicService"/>
+		<property name="informationsService" ref="informationsService"/>
+	</bean>
+	<!-- 贴吧信息的Action -->
+	<bean id="informationsAction" class="cn.lh.tieba.informations.action.InformationsAction" scope="prototype">
+		<property name="informationsService" ref="informationsService"/>
+		
+	</bean>
+	
+	<!-- 回复贴吧信息的Action -->
+	<bean id="repliesAction" class="cn.lh.tieba.replies.action.RepliesAction" scope="prototype">
+		<property name="repliesService" ref="repliesService"/>
+		<property name="informationsService" ref="informationsService"/>
+	</bean>
+	
+	<!--配置验证码的Action  -->
+	<bean id="checkImgAction" class="cn.lh.tieba.user.action.CheckImgAction" scope="prototype"></bean>
+	
+	<!-- 用户模块的Action -->
+	<bean id="userAction" class="cn.lh.tieba.user.action.UserAction" scope="prototype">
+		<!-- 注入Service -->
+		<property name="userService" ref="userService"/>
+	</bean>
+	<!-- 图片的Action -->
+	<bean id="pictureAction" class="cn.lh.tieba.picture.action.PictureAction" scope="prototype">
+		<property name="pictureService" ref="pictureService"/>
+	</bean>
+	<!-- 群组的Action -->
+	<bean id="groupAction" class="cn.lh.tieba.group.action.GroupAction" scope="prototype">
+		<property name="groupService" ref="groupService"/>
+	</bean>
+	
+	
+	<!-- 后台登录的Action -->
+	<bean id="adminUserAction" class="cn.lh.tieba.adminuser.action.AdminUserAction" scope="prototype">
+		<property name="adminUserService" ref="adminUserService"/>
+	</bean>
+	<!-- 后台管理用户的Action -->
+	<bean id="userAdminAction" class="cn.lh.tieba.user.adminaction.UserAdminAction" scope="prototype">
+		<property name="userService" ref="userService"/>
+	</bean>
+	<!-- 后台一级分类管理的Action -->
+	<bean id="adminCategoryAction" class="cn.lh.tieba.category.adminaction.AdminCategoryAction" scope="prototype">
+		<property name="categoryService" ref="categoryService"/>
+	</bean>
+	<!-- 后台二级分类管理的Action -->
+	<bean id="adminCategorySecondAction" class="cn.lh.tieba.categorysecond.adminaction.AdminCategorySecondAction" scope="prototype">
+		<property name="categorySecondService" ref="categorySecondService"/>
+		<property name="categoryService" ref="categoryService"/>
+	
+	</bean>
+	<!-- 后台对话题管理的Action -->
+	<bean id="adminTopicAction" class="cn.lh.tieba.topic.adminaction.AdminTopicAction" scope="prototype">
+		<property name="topicService" ref="topicService"/>
+	</bean>
+	<!-- 后台图片管理的Action -->
+	<bean id="adminPictureAction" class="cn.lh.tieba.picture.adminaction.AdminPictureAction" scope="prototype">
+		<property name="pictureService" ref="pictureService"/>
+		<property name="categorySecondService" ref="categorySecondService"/>
+	</bean>
+	<!-- 后台对贴吧信息的管理的Action-->
+	<bean id="adminInformationsAction" class="cn.lh.tieba.informations.adminaction.AdminInformationsAction" scope="prototype">
+		<property name="informationsService" ref="informationsService"/>
+	</bean>
+	<!-- 后台对群组管理的Action -->
+	<bean id="adminGroupAction" class="cn.lh.tieba.group.adminaction.AdminGroupAction" scope="prototype">
+		<property name="groupService" ref="groupService"/>
+	</bean>
+	
+<!-- Service的配置  ===========================-->
+	<!-- 用户的Service -->
+	<bean id="userService" class="cn.lh.tieba.user.service.UserService">
+		<property name="userDao" ref="userDao"/>
+	</bean>
+	<!-- 一级分类的Service -->
+	<bean id="categoryService" class="cn.lh.tieba.category.service.CategoryService">
+		<property name="categoryDao" ref="categoryDao"/>
+	</bean>
+	<!-- 图片的Service -->
+	<bean id="pictureService" class="cn.lh.tieba.picture.service.PictureService">
+		<property name="pictureDao" ref="pictureDao"/>
+	</bean>
+	<!-- 话题的Service -->
+	<bean id="topicService" class="cn.lh.tieba.topic.service.TopicService">
+		<property name="topicDao" ref="topicDao"/>
+	</bean>
+	<!-- 群组的Service -->
+	<bean id="groupService" class="cn.lh.tieba.group.service.GroupService">
+		<property name="groupDao" ref="groupDao"/>
+	</bean>
+	<!-- 后台登录是service -->
+	<bean id="adminUserService" class="cn.lh.tieba.adminuser.service.AdminUserService">
+		<property name="adminUserDao" ref="adminUserDao"/>
+	</bean>
+	<!-- 二级分类的Service -->
+	<bean id="categorySecondService" class="cn.lh.tieba.categorysecond.service.CategorySecondService">
+		<property name="categorySecondDao" ref="categorySecondDao"/>
+	</bean>
+	<!-- 贴吧信息的Service -->
+	<bean id="informationsService" class="cn.lh.tieba.informations.service.InformationsService">
+		<property name="informationsDao" ref="informationsDao"/>
+	</bean>
+	<!-- 回复贴吧信息的Service -->
+	<bean id="repliesService" class="cn.lh.tieba.replies.service.RepliesService">
+		<property name="repliesDao" ref="repliesDao"/>
+	</bean>
+	
+	
+<!-- Dao的配置  ===========================-->
+	<bean id="userDao" class="cn.lh.tieba.user.dao.UserDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="categoryDao" class="cn.lh.tieba.category.dao.CategoryDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="pictureDao" class="cn.lh.tieba.picture.dao.PictureDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="topicDao" class="cn.lh.tieba.topic.dao.TopicDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="groupDao" class="cn.lh.tieba.group.dao.GroupDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="informationsDao" class="cn.lh.tieba.informations.dao.InformationsDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- 回复贴的Dao -->
+	<bean id="repliesDao" class="cn.lh.tieba.replies.dao.RepliesDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<!-- 后台登录的Dao -->
+	<bean id="adminUserDao" class="cn.lh.tieba.adminuser.dao.AdminUserDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- 二级分类的Dao -->
+	<bean id="categorySecondDao" class="cn.lh.tieba.categorysecond.dao.CategorySecondDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+</beans>

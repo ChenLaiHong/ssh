@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    
+    <class name="cn.lh.tieba.informations.vo.Informations" table="informations">
+		<id name="inid">
+			<generator class="native"/>
+		</id>
+		<property name="contents"></property>
+		<property name="topic"></property>
+		<property name="author"></property>
+		<property name="image"></property>
+		<property name="idate"></property>
+		<many-to-one name="user" lazy="false" class="cn.lh.tieba.user.vo.User" column="uid"/>
+		
+			<!-- 贴吧信息与回复的关联 -->
+	     <set name="replie">
+	       	<key column="inid"/>
+	       	<one-to-many class="cn.lh.tieba.replies.vo.Replies"/>
+	     </set>
+	</class>
+</hibernate-mapping>

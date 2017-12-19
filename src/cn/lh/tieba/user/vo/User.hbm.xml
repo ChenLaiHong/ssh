@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    
+<hibernate-mapping>
+<!-- name属性：实体类的全路径    table属性：数据库表的名称 -->
+	<class name="cn.lh.tieba.user.vo.User" table="user">
+		<id name="uid">
+		<!-- native属性：生成表id值就是主键自动增长 -->
+			<generator class="native"/>
+		</id>
+		<!-- 实体类的其他属性    name属性：实体类属性名称，不写column属性则默认表字段名称跟属性名称一样 -->
+		<property name="username"/>
+		<property name="password"/>
+		<property name="name"/>
+		<property name="email"/>
+		<property name="sex"/>
+		<property name="phone"/>
+		<property name="addr"/>
+		
+	<!-- 用户与评论的关联 -->
+	<set name="information">
+	       	<key column="uid"/>
+	       	<!-- 用户与评论是一对多的关系 -->
+	       	<one-to-many class="cn.lh.tieba.informations.vo.Informations"/>
+	     </set>
+	</class>
+</hibernate-mapping>

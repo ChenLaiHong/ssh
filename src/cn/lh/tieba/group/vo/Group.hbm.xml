@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    
+<hibernate-mapping>
+<!-- name属性：实体类的全路径    table属性：数据库表的名称 -->
+	<class name="cn.lh.tieba.group.vo.Group" table="groups">
+		<id name="gid">
+		<!-- native属性：生成表id值就是主键自动增长 -->
+			<generator class="native"/>
+		</id>
+		<!-- 实体类的其他属性    name属性：实体类属性名称，不写column属性则默认表字段名称跟属性名称一样 -->
+		<property name="gname"/>
+		<property name="image"/>
+		<property name="gdesc"/>
+		<property name="gmember"/>
+		<property name="gdate"/>
+		
+	</class>
+</hibernate-mapping>
